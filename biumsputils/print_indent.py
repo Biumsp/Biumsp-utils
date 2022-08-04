@@ -1,51 +1,65 @@
 import builtins
 from textwrap import TextWrapper
-
+from biumsputils.colorcodes import Colorcodes
+from biumsputils.decorators import can_fail_silently
 
 class Print():
     '''
-        print function that auto-indents before 
+        Printing function that auto-indents before 
         printing, with custom indent and max width. 
         By default it behaves like the builtin print().
         It also enables color coding.
     '''
+    indent = False
+    step = '    '
+    level = 0
+    max_width = 130
+    color = Colorcodes()
 
     def __init__(self):
-        self.level = 0
-        self.indent = False
-        self.step = '    '
-        self.max_width = 130
-        self.color = Colorcodes()
+        '''
+            When you create a new instance, all attributes are resetted
+                so it's a good idea to create only one instance, shared
+                between all your modules, and to do so after you imported
+                all the utilities from biumsputils. 
+                This way, the instances created by the utilities will already
+                exist when you define your print function, and won't override
+                your settings.
+        '''
+        Print.level = 0
+        Print.indent = False
+        Print.step = '    '
+        Print.max_width = 130
 
     def spaces_step(self):
-        self.step = '    '
+        Print.step = '    '
     
     def lines_step(self):
-        self.step = '│   '
+        Print.step = '│   '
 
     def custom_step(self, step: str):
         assert isinstance(step, str), 'step must be a string'
-        self.step = step
+        Print.step = step
 
     def auto_indent(self):
-        self.indent = True
+        Print.indent = True
 
     def no_indent(self):
-        self.indent = False
+        Print.indent = False
 
     def up(self):
-        self.level += 1
+        if Print.indent: Print.level += 1
     
     def down(self):
-        if self.level > 0: self.level -= 1
+        if Print.indent and Print.level > 0: Print.level -= 1
 
     def _color(self, message, color):
         # Return unchanged if color is None (logger's default)
         if not color: return message
 
         try:
-            color = self.color.__getattribute__(color)
-            reset = self.color.reset
+            color = Print.color.__getattribute__(color)
+            reset = Print.color.reset
         except AttributeError as error:
             raise error(f'color {color} is not available')
         except Exception as error:
@@ -54,23 +68,27 @@ class Print():
         return color + message + reset
     
     @can_fail_silently(default=True, callback=builtins.print)
-    def __call__(self, *args, **kwargs):
+    def __call__(self, *args, color=None, sep=' ', **kwargs):
 
-        sep = kwargs['sep'] if 'sep' in kwargs else ' '
         message = sep.join(args)
 
-        if self.indent:
-            wrapper = TextWrapper(
-                initial_indent=self.step*self.level,
-                subsequent_indent=self.step*self.level + '├─',
-                width=self.max_width)
+        if '\n' in message: messages = message.split('\n')
+        else: messages = [message]
 
-            message = wrapper.fill(message)
+        for message in messages:
+            if Print.indent:
+                wrapper = TextWrapper(
+                    initial_indent=Print.step*Print.level,
+                    subsequent_indent=Print.step*Print.level + '├─ ',
+                    width=Print.max_width)
 
-            # Replace the last "new-line" symbol
-            message = message[::-1].replace('─├', '─└',1)[::-1]
+                message = wrapper.fill(message)
 
-        # Add coloring
-        if 'color' in kwargs:
-            message = self._color(message, kwargs['color'])
-            del kwargs['color']
+                # Replace the last "new-line" symbol
+                message = message[::-1].replace(' ─├', ' ─└',1)[::-1]
+
+            # Add coloring
+            if color:
+                message = self._color(message, color)
+
+            builtins.print(message, sep=sep, **kwargs)
