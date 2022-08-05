@@ -1,4 +1,5 @@
 import builtins
+from pydoc import pipepager
 from textwrap import TextWrapper
 from biumsputils.colorcodes import Colorcodes
 from biumsputils.decorators import can_fail_silently
@@ -72,8 +73,15 @@ class Print():
 
         message = sep.join(args)
 
+        # Add coloring
+        if color:
+            message = self._color(message, color)
+
         if '\n' in message: messages = message.split('\n')
         else: messages = [message]
+
+        if len(messages) > 30 and not Print.indent:
+            pipepager('\n'.join(messages), "less -R")
 
         for message in messages:
             if Print.indent:
@@ -87,8 +95,7 @@ class Print():
                 # Replace the last "new-line" symbol
                 message = message[::-1].replace(' ─├', ' ─└',1)[::-1]
 
-            # Add coloring
-            if color:
-                message = self._color(message, color)
-
             builtins.print(message, sep=sep, **kwargs)
+
+
+print = Print()

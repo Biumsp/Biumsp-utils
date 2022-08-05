@@ -1,4 +1,4 @@
-from biumsputils.print_indent import Print
+from biumsputils.print import print
 
 # Logger used by some decorators
 class Logger():
@@ -12,8 +12,6 @@ class Logger():
 
     def __init__(self):
         self.state = Logger.OFF
-        self.print = Print()
-        self.print.auto_indent()
 
     def set_state_debug(self):
         self.state = Logger.DEBUG
@@ -26,8 +24,10 @@ class Logger():
 
     def debug(self, *args, **kwargs):
         if self.state >= Logger.DEBUG:
-            self.print(*args, **kwargs)
+            print(*args, **kwargs)
     
     def info(self, *args, **kwargs):
         if self.state >= Logger.INFO:
-            self.print(*args, **kwargs)
+            print(*args, **kwargs)
+
+logger = Logger()

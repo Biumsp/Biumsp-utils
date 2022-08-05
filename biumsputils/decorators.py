@@ -66,8 +66,7 @@ def debugger(logger, cls):
             the input arguments and the return value
     '''
 
-    from biumsputils.print_indent import Print
-    print = Print()
+    from biumsputils.print import print
 
     def funk_debugger(funk):
 
