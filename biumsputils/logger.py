@@ -12,6 +12,7 @@ class Logger():
 
     def __init__(self):
         self.state = Logger.OFF
+        self.IO = False
 
     def set_state_debug(self):
         self.state = Logger.DEBUG
@@ -20,7 +21,17 @@ class Logger():
         self.state = Logger.INFO
 
     def set_state_off(self):
-        self.state = Logger.OFF                 
+        self.state = Logger.OFF  
+
+    def activate_IO(self):
+        self.IO = True 
+
+    def deactivate_IO(self):
+        self.IO = False
+
+    def io(self, *args, **kwargs):
+        if self.IO:
+            print(*args, **kwargs)           
 
     def debug(self, *args, **kwargs):
         if self.state >= Logger.DEBUG:

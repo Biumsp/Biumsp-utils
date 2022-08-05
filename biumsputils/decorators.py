@@ -1,7 +1,7 @@
 import functools, inspect
 
 
-def decorate_class(cls, decorator, dunder=False):
+def decorate_class(cls, decorator):
     '''
         Applies the decorator to all methods of a class
     '''
@@ -10,13 +10,13 @@ def decorate_class(cls, decorator, dunder=False):
         cls, lambda x: inspect.isfunction(x) or inspect.ismethod(x))
 
     for name, funk in members:
-        if dunder or not (name.startswith('__') and name.endswith('__')):
+        if not (name.startswith('__') and name.endswith('__')):
             setattr(cls, name, decorator(funk))
 
     return cls
 
 
-def decorate_module(module, decorator, decorate_classes=True, dunder=False):
+def decorate_module(module, decorator, decorate_classes=True):
     '''
         Applies the decorator to all functions of a module:
             if decorate_classes=True, it also decorates
@@ -29,7 +29,7 @@ def decorate_module(module, decorator, decorate_classes=True, dunder=False):
         if inspect.isfunction(obj):
             setattr(module, name, decorator(obj))
         elif inspect.isclass(obj) and decorate_classes:
-            setattr(module, name, decorate_class(obj, decorator, dunder))
+            setattr(module, name, decorate_class(obj, decorator))
 
     return module
 
@@ -91,8 +91,8 @@ def debugger(logger, cls):
 
                 # Logging --------------------------------------
 
-                logger.info(f'Entering <{cls}.{funk.__name__}>', color='green')
-                logger.debug(
+                logger.debug(f'Entering <{cls}.{funk.__name__}>', color='green')
+                logger.io(
                     'Input: {} {}'.format(
                     largs, 
                     lkwargs if lkwargs else ''
@@ -112,10 +112,10 @@ def debugger(logger, cls):
                 try: print.down()
                 except: pass
 
-                try: logger.debug(f'Output: {str(output)}', color='orange')
+                try: logger.io(f'Output: {str(output)}', color='orange')
                 except: pass
 
-                logger.info(f'Exiting <{cls}.{funk.__name__}>', color='green')
+                logger.debug(f'Exiting <{cls}.{funk.__name__}>', color='green')
 
                 
         return wrapper_debugger

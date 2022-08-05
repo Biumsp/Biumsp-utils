@@ -1,9 +1,11 @@
 import git
 import sys
 from biumsputils.print import print
-
+from biumsputils.logger import logger
 
 class GitWrapper():
+    silent = True
+
     def __init__(self, path):
         self.path = path
         try:
@@ -40,7 +42,7 @@ class GitWrapper():
         try:
             self.repo.index.commit(message)
             message = message.split(sep="\n")[0]
-            print(f'Git: commit successful: {message}')
+            logger.info(f'Git: commit successful: {message}')
         except:
             print('Git Error: unable to commit')
             sys.exit(1)
@@ -56,7 +58,7 @@ class GitWrapper():
 
         try:
             self.repo.git.push(self.origin, self.repo.head.ref)
-            print('Git: successfully pushed refs to origin')
+            logger.info('Git: successfully pushed refs to origin')
         except:
             print('Git Error: unable to push to origin')
             sys.exit(1)

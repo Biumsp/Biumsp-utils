@@ -1,7 +1,5 @@
-import os, sys, tempfile, subprocess
-
-
-class InputError(Exception): pass
+import os, tempfile, subprocess
+from biumsputils.fatal_error import fatal_error
 
 def editor_input(initial_message=''):
 
@@ -22,7 +20,7 @@ def editor_input(initial_message=''):
     message = '\n'.join(message)
 
     if not message.replace('\n','').replace(' ', ''):
-        raise InputError('message cannot be empty')
+        fatal_error('message cannot be empty')
     
     return message
 
