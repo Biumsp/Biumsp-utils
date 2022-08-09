@@ -1,5 +1,6 @@
 import functools, inspect
 
+# These decorators must be used like @this(), not @this
 
 def decorate_class(cls, decorator):
     '''

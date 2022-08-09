@@ -50,7 +50,13 @@ class GitWrapper():
 
     def pull(self, force=False):
         '''Pull from remote'''
-        print(f'Git: pull not implemented')
+
+        try:
+            self.origin.pull()
+            print('Git: successfully pulled refs from origin')
+        except:
+            print('Git Error: unable to pull from origin')
+            sys.exit(1)
 
 
     def push(self):
@@ -58,7 +64,7 @@ class GitWrapper():
 
         try:
             self.repo.git.push(self.origin, self.repo.head.ref)
-            logger.info('Git: successfully pushed refs to origin')
+            print('Git: successfully pushed refs to origin')
         except:
             print('Git Error: unable to push to origin')
             sys.exit(1)

@@ -1,6 +1,7 @@
 from shutil import copyfile
 from json import loads as jsonloads
 from json import dumps as jsondumps
+from biumsputils.decorators import can_fail_silently
 import os
 
 
@@ -13,6 +14,7 @@ class ReadError(Exception): pass
 class CopyError(Exception): pass
 
 
+@can_fail_silently()
 def read(path, loads=False):
     '''Read file safely'''
 
@@ -24,6 +26,7 @@ def read(path, loads=False):
         raise ReadError(f'unable to read file {path}')
 
 
+@can_fail_silently()
 def mkdir(path):
     '''Create directory safely'''
 
@@ -35,10 +38,11 @@ def mkdir(path):
         raise InvalidPath(f'{path} is a file, not a directory')
 
     # Make directory
-    try: mkdir(path)
+    try: os.mkdir(path)
     except Exception as e: raise MkdirError(f'cannot create directory {path}')
 
 
+@can_fail_silently()
 def write(path, text, dumps=False, override=True):
     '''Write to file safely'''
 
@@ -60,14 +64,16 @@ def write(path, text, dumps=False, override=True):
     rename(tmp_path, path)
 
 
+@can_fail_silently()
 def rename(old, new):
     '''Rename files and folders safely'''
 
     try:
         os.rename(old, new)
-    except Exception as e: RenameError(f'unable to move {old} to {new}')
+    except Exception as e: raise RenameError(f'unable to move {old} to {new}')
 
 
+@can_fail_silently()
 def delete(file):
     ''' Delete files safely'''
 
@@ -75,11 +81,12 @@ def delete(file):
         raise InvalidPath(f'no file named "{file}" to delete')
 
     try: os.remove(file)
-    except Exception as e: DeleteError(f'cannot remove file {file}')
+    except Exception as e: raise DeleteError(f'cannot remove file {file}')
 
 
+@can_fail_silently()
 def copy(old, new):
     '''Copy files safely'''
 
     try: copyfile(old, new)
-    except: CopyError(f'Error: cannot copy {old} to {new}')
+    except: raise CopyError(f'Error: cannot copy {old} to {new}')

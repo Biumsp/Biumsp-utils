@@ -1,7 +1,7 @@
-class ValidationError(Exception): pass
+from biumsputils.fatal_error import fatal_error
 
 def validate(condition: bool, message: str):
-    if not condition: raise ValidationError(message)
+    if not condition: fatal_error(message)
 
 
 def requires(arg, *args):
