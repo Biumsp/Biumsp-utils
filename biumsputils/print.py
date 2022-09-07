@@ -31,6 +31,7 @@ class Print():
         Print.indent = False
         Print.step = '    '
         Print.max_width = 130
+        self.queue = []
 
     def spaces_step(self):
         Print.step = '    '
@@ -54,6 +55,9 @@ class Print():
     def down(self):
         if Print.indent and Print.level > 0: Print.level -= 1
 
+    def add(self, *args):
+        self.queue.append(args)
+
     def _color(self, message, color):
         # Return unchanged if color is None (logger's default)
         if not color: return message
@@ -67,6 +71,12 @@ class Print():
             raise error
 
         return color + message + reset
+
+    
+    def empty(self):
+        for q in self.queue:
+            self.__call__(q)
+            
     
     @can_fail_silently(default=True, callback=builtins.print)
     def __call__(self, *args, color=None, sep=' ', **kwargs):
