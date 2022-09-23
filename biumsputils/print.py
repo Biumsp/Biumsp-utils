@@ -74,8 +74,8 @@ class Print():
 
     
     def empty(self):
-        for q in self.queue:
-            self.__call__(q)
+        for args in self.queue: print(*args)
+        self.queue = []
             
     
     @can_fail_silently(default=True, callback=builtins.print)
