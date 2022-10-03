@@ -25,13 +25,13 @@ class GitWrapper():
     def add_(self, file):
         '''Add the specified file'''
         
-        try: self.repo.index.add([file])
+        # try: self.repo.index.add([file])
+        # except:
+        try: 
+            self.repo.git.add(all=True)
         except:
-            try: 
-                self.repo.git.add(all=True)
-            except:
-                print(f'Git Error: cannot add {file}')
-                sys.exit(1)
+            print(f'Git Error: cannot add {file}')
+            sys.exit(1)
 
 
     def commit(self, file, message):
