@@ -55,8 +55,8 @@ class Print():
     def down(self):
         if Print.indent and Print.level > 0: Print.level -= 1
 
-    def add(self, *args):
-        self.queue.append(args)
+    def add(self, *args, **kwargs):
+        self.queue.append((args, kwargs))
 
     def _color(self, message, color):
         # Return unchanged if color is None (logger's default)
@@ -74,7 +74,7 @@ class Print():
 
     
     def empty(self):
-        for args in self.queue: print(*args)
+        for p in self.queue: print(*p[0], **p[1])
         self.queue = []
             
     
