@@ -1,6 +1,6 @@
 import builtins
 from pydoc import pipepager
-from textwrap import TextWrapper
+from textwrap import TextWrapper, indent
 from biumsputils.colorcodes import Colorcodes
 from biumsputils.decorators import can_fail_silently
 
@@ -11,9 +11,7 @@ class Print():
         By default it behaves like the builtin print().
         It also enables color coding.
     '''
-    indent = False
-    step = '    '
-    level = 0
+    
     max_width = 130
     color = Colorcodes()
 
@@ -27,33 +25,33 @@ class Print():
                 exist when you define your print function, and won't override
                 your settings.
         '''
-        Print.level = 0
-        Print.indent = False
-        Print.step = '    '
+        self.level = 0
+        self.indent = False
+        self.step = '    '
         Print.max_width = 130
         self.queue = []
 
     def spaces_step(self):
-        Print.step = '    '
+        self.step = '    '
     
     def lines_step(self):
-        Print.step = '│   '
+        self.step = '│   '
 
     def custom_step(self, step: str):
         assert isinstance(step, str), 'step must be a string'
-        Print.step = step
+        self.step = step
 
     def auto_indent(self):
-        Print.indent = True
+        self.indent = True
 
     def no_indent(self):
-        Print.indent = False
+        self.indent = False
 
     def up(self):
-        if Print.indent: Print.level += 1
+        if self.indent: self.level += 1
     
     def down(self):
-        if Print.indent and Print.level > 0: Print.level -= 1
+        if self.indent and self.level > 0: self.level -= 1
 
     def add(self, *args, **kwargs):
         self.queue.append((args, kwargs))
@@ -78,10 +76,10 @@ class Print():
         self.queue = []
             
     
-    @can_fail_silently(default=True, callback=builtins.print)
+    #@can_fail_silently(default=False, callback=builtins.print)
     def __call__(self, *args, color=None, sep=' ', **kwargs):
-
-        message = sep.join(args)
+        
+        message = sep.join([str(x) for x in args])
 
         # Add coloring
         if color:
@@ -90,14 +88,14 @@ class Print():
         if '\n' in message: messages = message.split('\n')
         else: messages = [message]
 
-        if len(messages) > 30 and not Print.indent:
+        if len(messages) > 30 and not self.indent:
             pipepager('\n'.join(messages), "less -R")
 
         for message in messages:
-            if Print.indent:
+            if self.indent:
                 wrapper = TextWrapper(
-                    initial_indent=Print.step*Print.level,
-                    subsequent_indent=Print.step*Print.level + '├─ ',
+                    initial_indent=self.step*self.level,
+                    subsequent_indent=self.step*self.level + '├─ ',
                     width=Print.max_width)
 
                 message = wrapper.fill(message)
